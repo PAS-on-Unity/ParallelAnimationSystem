@@ -1,6 +1,9 @@
 [submodule "Pamx"]
 	path = Pamx
-	url = https://github.com/Reimnop/Pamx
+	url = https://github.com/PAS-on-Unity/Pamx
 [submodule "TmpEmulation"]
 	path = TmpEmulation
-	url = https://github.com/Reimnop/TmpEmulation
+	url = https://github.com/PAS-on-Unity/TmpEmulation
+[submodule "SimpleStructuredBinaryFormat"]
+	path = SimpleStructuredBinaryFormat
+	url = https://github.com/PAS-on-Unity/SimpleStructuredBinaryFormat
