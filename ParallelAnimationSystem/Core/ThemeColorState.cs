@@ -1,27 +1,75 @@
-using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using ParallelAnimationSystem.Core.Data;
 
 namespace ParallelAnimationSystem.Core;
 
 public struct ThemeColorState
 {
-    public const int Buffer4Length = 4;
-    public const int Buffer9Length = 9;
-    
-    [InlineArray(Buffer4Length)]
-    public struct Buffer4<T>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct Buffer4<T> where T : unmanaged
     {
-        public int Length => Buffer4Length;
+        public int Length => 4;
         
         private T element0;
+        private T element1;
+        private T element2;
+        private T element3;
+        
+        public unsafe T this[int index]
+        {
+            get
+            {
+                if (index is < 0 or >= 4)
+                    throw new IndexOutOfRangeException();
+
+                fixed (T* ptr = &element0)
+                    return ptr[index];
+            }
+            set
+            {
+                if (index is < 0 or >= 4)
+                    throw new IndexOutOfRangeException();
+
+                fixed (T* ptr = &element0)
+                    ptr[index] = value;
+            }
+        }
     }
     
-    [InlineArray(Buffer9Length)]
-    public struct Buffer9<T>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct Buffer9<T> where T : unmanaged
     {
-        public int Length => Buffer9Length;
+        public int Length => 9;
         
         private T element0;
+        private T element1;
+        private T element2;
+        private T element3;
+        private T element4;
+        private T element5;
+        private T element6;
+        private T element7;
+        private T element8;
+        
+        public unsafe T this[int index]
+        {
+            get
+            {
+                if (index is < 0 or >= 9)
+                    throw new IndexOutOfRangeException();
+
+                fixed (T* ptr = &element0)
+                    return ptr[index];
+            }
+            set
+            {
+                if (index is < 0 or >= 9)
+                    throw new IndexOutOfRangeException();
+
+                fixed (T* ptr = &element0)
+                    ptr[index] = value;
+            }
+        }
     }
 
     public Buffer4<ColorRgb> Player;

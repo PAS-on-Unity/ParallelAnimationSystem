@@ -1,7 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
 using ParallelAnimationSystem.Core;
 using ParallelAnimationSystem.Data;
-using ParallelAnimationSystem.Rendering;
 
 namespace ParallelAnimationSystem;
 
@@ -9,34 +7,25 @@ public static class StartupExtension
 {
     public static App InitializeApp(this IStartup startup)
     {
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton(startup.AppSettings);
-        serviceCollection.AddLogging(startup.ConfigureLogging);
-        serviceCollection.AddSingleton(startup.CreateWindowManager);
-        serviceCollection.AddSingleton(startup.CreateRenderer);
-        serviceCollection.AddSingleton<BeatmapRunner>();
-        serviceCollection.AddSingleton<IResourceManager>(x =>
-        {
-            var appResourceManager = new EmbeddedResourceManager(typeof(StartupExtension).Assembly);
-            
-            var resourceManager = startup.CreateResourceManager(x);
-            if (resourceManager is null)
-                return appResourceManager;
-            
-            return new MergedResourceManager([resourceManager, appResourceManager]);
-        });
-        serviceCollection.AddSingleton(startup.CreateMediaProvider);
-
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        // Create renderer
+        var renderer = startup.CreateRenderer();
         
-        // Get services
-        var beatmapRunner = serviceProvider.GetRequiredService<BeatmapRunner>();
-        var renderer = serviceProvider.GetRequiredService<IRenderer>();
-
+        // Create beatmap runner
+        var appSettings = startup.CreateAppSettings();
+        var mediaProvider = startup.CreateMediaProvider();
+        
+        var ownResourceManager = new EmbeddedResourceManager(typeof(StartupExtension).Assembly);
+        var appResourceManager = startup.CreateResourceManager();
+        IResourceManager resourceManager = appResourceManager is null
+            ? ownResourceManager
+            : new MergedResourceManager([appResourceManager, ownResourceManager]);
+        var logger = startup.CreateLogger();
+        var beatmapRunner = new BeatmapRunner(appSettings, mediaProvider, resourceManager, renderer, logger);
+        
         // Initialize them
         beatmapRunner.Initialize();
         renderer.Initialize();
         
-        return new App(serviceProvider, renderer, beatmapRunner);
+        return new App(renderer, beatmapRunner);
     }
 }

@@ -3,11 +3,19 @@ using ParallelAnimationSystem.Rendering;
 
 namespace ParallelAnimationSystem;
 
-public record App(IServiceProvider ServiceProvider, IRenderer Renderer, BeatmapRunner BeatmapRunner) : IDisposable
+public class App : IDisposable
 {
+    public IRenderer Renderer { get; }
+    public BeatmapRunner BeatmapRunner { get; }
+
+    internal App(IRenderer renderer, BeatmapRunner beatmapRunner)
+    {
+        Renderer = renderer;
+        BeatmapRunner = beatmapRunner;
+    }
+    
     public void Dispose()
     {
-        if (ServiceProvider is IDisposable disposable)
-            disposable.Dispose();
+        Renderer.Dispose();
     }
 }

@@ -1,13 +1,11 @@
 using System.Numerics;
 using ParallelAnimationSystem.Rendering.TextProcessing;
-using ParallelAnimationSystem.Windowing;
 using TmpParser;
 
 namespace ParallelAnimationSystem.Rendering;
 
 public interface IRenderer : IDisposable
 {
-    IWindow Window { get; }
     int QueuedDrawListCount { get; }
     
     void Initialize();

@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Microsoft.Extensions.Logging;
 using System.Numerics;
 using ParallelAnimationSystem.Core.Data;
 using ParallelAnimationSystem.Data;
@@ -9,7 +8,7 @@ using ParallelAnimationSystem.Mathematics;
 
 namespace ParallelAnimationSystem.Core;
 
-public class BeatmapRunner(IAppSettings appSettings, IMediaProvider mediaProvider, IResourceManager resourceManager, IRenderer renderer, ILogger<BeatmapRunner> logger)
+public class BeatmapRunner(IAppSettings appSettings, IMediaProvider mediaProvider, IResourceManager resourceManager, IRenderer renderer, ILogger logger)
 {
     private readonly List<List<IMeshHandle>> meshes = [];
     
@@ -27,13 +26,13 @@ public class BeatmapRunner(IAppSettings appSettings, IMediaProvider mediaProvide
         // Load beatmap
         var sw = Stopwatch.StartNew();
         
-        logger.LogInformation("Loading beatmap");
+        logger.LogInfo("Loading beatmap");
         var beatmap = mediaProvider.LoadBeatmap(out var format);
         
-        logger.LogInformation("Using beatmap format '{LevelFormat}'", format);
+        logger.LogInfo($"Using beatmap format '{format}'");
         
         // Migrate the beatmap to the latest version of the beatmap format
-        logger.LogInformation("Migrating beatmap");
+        logger.LogInfo("Migrating beatmap");
         switch (format) 
         {
             case BeatmapFormat.Lsb:
@@ -44,22 +43,22 @@ public class BeatmapRunner(IAppSettings appSettings, IMediaProvider mediaProvide
                 break;
         }
         
-        logger.LogInformation("Using seed '{Seed}'", appSettings.Seed);
+        logger.LogInfo($"Using seed '{appSettings.Seed}'");
         
         // Create animation runner
-        logger.LogInformation("Initializing animation runner");
+        logger.LogInfo("Initializing animation runner");
         var beatmapImporter = new BeatmapImporter(appSettings.Seed, logger);
         runner = beatmapImporter.CreateRunner(beatmap);
         
         var elapsed = sw.Elapsed;
         sw.Stop();
         
-        logger.LogInformation("Loaded all objects in {Elapsed}ms", elapsed.TotalMilliseconds);
+        logger.LogInfo($"Loaded all objects in {elapsed.TotalMilliseconds}ms");
     }
 
     private void RegisterMeshes()
     {
-        logger.LogInformation("Registering meshes");
+        logger.LogInfo("Registering meshes");
         
         meshes.Add([
             renderer.RegisterMesh(PaAssets.SquareFilledVertices, PaAssets.SquareFilledIndices),
@@ -105,7 +104,7 @@ public class BeatmapRunner(IAppSettings appSettings, IMediaProvider mediaProvide
     
     private void RegisterFonts()
     {
-        logger.LogInformation("Registering fonts");
+        logger.LogInfo("Registering fonts");
 
         var inconsolata = ReadFont("Fonts/Inconsolata.tmpe");
         var arialuni = ReadFont("Fonts/Arialuni.tmpe");

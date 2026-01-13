@@ -1,6 +1,4 @@
-using System.IO.Hashing;
 using System.Text;
-using Microsoft.Extensions.Logging;
 using System.Numerics;
 using Pamx.Common;
 using Pamx.Common.Data;
@@ -12,6 +10,7 @@ using ParallelAnimationSystem.Core.Data;
 using ParallelAnimationSystem.Data;
 using ParallelAnimationSystem.Util;
 using ParallelAnimationSystem.Mathematics;
+using Standart.Hash.xxHash;
 using BeatmapObject = ParallelAnimationSystem.Core.Beatmap.BeatmapObject;
 
 namespace ParallelAnimationSystem.Core;
@@ -635,7 +634,7 @@ public class BeatmapImporter(ulong randomSeed, ILogger logger)
     private static float RandomRange(float min, float max, params object[] seeds)
     {
         // Use xxHash to generate a random number
-        var hash = new XxHash32();
+        using var ms = new MemoryStream();
         
         // Hash the seeds
         foreach (var seed in seeds)
@@ -643,13 +642,13 @@ public class BeatmapImporter(ulong randomSeed, ILogger logger)
             switch (seed)
             {
                 case string strSeed:
-                    hash.Append(Encoding.UTF8.GetBytes(strSeed));
+                    ms.Write(Encoding.UTF8.GetBytes(strSeed));
                     break;
                 case int intSeed:
-                    hash.Append(BitConverter.GetBytes(intSeed));
+                    ms.Write(BitConverter.GetBytes(intSeed));
                     break;
                 case ulong ulongSeed:
-                    hash.Append(BitConverter.GetBytes(ulongSeed));
+                    ms.Write(BitConverter.GetBytes(ulongSeed));
                     break;
                 default:
                     throw new ArgumentException($"Unsupported seed type: '{seed.GetType()}'");
@@ -657,11 +656,11 @@ public class BeatmapImporter(ulong randomSeed, ILogger logger)
         }
         
         // Hash the min and max values
-        hash.Append(BitConverter.GetBytes(min));
-        hash.Append(BitConverter.GetBytes(max));
+        ms.Write(BitConverter.GetBytes(min));
+        ms.Write(BitConverter.GetBytes(max));
         
         // Get the hash as a float
-        var hashValue = hash.GetCurrentHashAsUInt32();
+        var hashValue = xxHash32.ComputeHash(ms.ToArray());
         
         return (float) MathUtil.Lerp(min, max, hashValue / (double) uint.MaxValue);
     }

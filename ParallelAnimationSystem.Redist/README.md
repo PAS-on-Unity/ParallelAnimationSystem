@@ -1,1 +1,0 @@
-Platform-specific native binaries for the [ParallelAnimationSystem](https://github.com/Reimnop/ParallelAnimationSystem).
