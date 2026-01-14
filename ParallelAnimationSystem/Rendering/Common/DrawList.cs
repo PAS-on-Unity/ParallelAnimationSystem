@@ -17,7 +17,7 @@ public class DrawList : IDrawList, IReadOnlyCollection<DrawData>
     private readonly List<DrawData> drawDataList = [];
     private int count;
     
-    public void AddMesh(IMeshHandle mesh, Matrix3x2 transform, ColorRgba color1, ColorRgba color2, RenderMode renderMode)
+    public void AddMesh(IMeshHandle mesh, Matrix3x2 transform, ColorRgba color1, ColorRgba color2, RenderMode renderMode, float gradientRotation, float gradientScale)
     {
         DrawData drawData;
         if (drawDataList.Count > count)
@@ -34,6 +34,8 @@ public class DrawList : IDrawList, IReadOnlyCollection<DrawData>
         drawData.Color1 = color1;
         drawData.Color2 = color2;
         drawData.RenderMode = renderMode;
+        drawData.GradientRotation = gradientRotation;
+        drawData.GradientScale = gradientScale;
         drawData.Index = count;
         
         count++;

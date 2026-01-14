@@ -536,12 +536,15 @@ public class BeatmapImporter(ulong randomSeed, ILogger logger)
             IsEmpty = @object.Type is ObjectType.Empty or ObjectType.LegacyEmpty,
             ParentOffset = @object.ParentOffset,
             ParentType = @object.ParentType,
+            RenderMode = renderMode,
+            GradientRotation = @object.GradientRotation,
+            GradientScale =  @object.GradientScale,
             AutoKillType = @object.AutoKillType,
             StartTime = @object.StartTime,
             KillTimeOffset = @object.AutoKillOffset,
             Origin = origin,
             RenderDepth = @object.RenderDepth,
-            Shape = @object.Shape,
+            Shape = @object.Shape
         };
     }
     

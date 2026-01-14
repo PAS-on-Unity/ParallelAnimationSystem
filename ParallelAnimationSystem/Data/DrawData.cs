@@ -13,6 +13,8 @@ public class DrawData
     public ColorRgba Color1 { get; set; }
     public ColorRgba Color2 { get; set; }
     public RenderMode RenderMode { get; set; }
+    public float GradientRotation { get; set; }
+    public float GradientScale { get; set; }
     
     public int Index { get; set; }
 }

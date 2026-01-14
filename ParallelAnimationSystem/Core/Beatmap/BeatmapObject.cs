@@ -51,6 +51,18 @@ public class BeatmapObject(
         set => SetField(ref renderMode, value);
     }
 
+    public float GradientRotation
+    {
+        get => gradientRotation;
+        set => SetField(ref gradientRotation, value);
+    }
+    
+    public float GradientScale
+    {
+        get => gradientScale;
+        set => SetField(ref gradientScale, value);
+    }
+
     public Vector2 Origin
     {
         get => origin;
@@ -116,6 +128,8 @@ public class BeatmapObject(
     private ParentType parentType = ParentType.Position | ParentType.Scale | ParentType.Rotation;
     
     private RenderMode renderMode = RenderMode.Normal;
+    private float gradientRotation = 0.0f;
+    private float gradientScale = 1.0f;
     
     private Vector2 origin = new(0.5f);
 

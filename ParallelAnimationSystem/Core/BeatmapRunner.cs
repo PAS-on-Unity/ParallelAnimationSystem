@@ -209,6 +209,8 @@ public class BeatmapRunner(IAppSettings appSettings, IMediaProvider mediaProvide
                     {
                         var mesh = meshOptionList[shapeOptionIndex];
                         var renderMode = beatmapObject.RenderMode;
+                        var gradientRotation = beatmapObject.GradientRotation;
+                        var gradientScale = beatmapObject.GradientScale;
                         
                         var color1 = beatmapObjectColor.Color1;
                         var color2 = beatmapObjectColor.Color2;
@@ -218,7 +220,7 @@ public class BeatmapRunner(IAppSettings appSettings, IMediaProvider mediaProvide
                             ? new ColorRgba(color2.R, color2.G, color2.B, 0.0f)
                             : new ColorRgba(color2.R, color2.G, color2.B, beatmapObjectColor.Opacity);
             
-                        drawList.AddMesh(mesh, transform, color1Rgba, color2Rgba, renderMode);
+                        drawList.AddMesh(mesh, transform, color1Rgba, color2Rgba, renderMode, gradientRotation, gradientScale);
                     }
                 }
             }
