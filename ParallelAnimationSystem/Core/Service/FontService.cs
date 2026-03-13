@@ -70,7 +70,7 @@ public class FontService : IDisposable
         var tmpFile = TmpRead.Read(stream);
         var atlas = tmpFile.Atlas;
         
-        var fontHandle = renderQueue.CreateFont(atlas.Width, atlas.Height, MemoryMarshal.AsBytes(atlas.Data));
+        var fontHandle = renderQueue.CreateFont(atlas.Width, atlas.Height, MemoryMarshal.AsBytes<TmpAtlasPixel>(atlas.Data));
         var id = fontHandle.Id;
         
         fontInfos.EnsureCount(id + 1);

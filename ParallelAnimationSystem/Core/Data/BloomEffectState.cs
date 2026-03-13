@@ -1,3 +1,5 @@
+using ParallelAnimationSystem.Mathematics;
+
 namespace ParallelAnimationSystem.Core.Data;
 
 public struct BloomEffectState()
@@ -9,8 +11,8 @@ public struct BloomEffectState()
     public static BloomEffectState Lerp(BloomEffectState from, BloomEffectState to, float t)
         => new()
         {
-            Intensity = float.Lerp(from.Intensity, to.Intensity, t),
-            Diffusion = float.Lerp(from.Diffusion, to.Diffusion, t),
+            Intensity = MathUtil.Lerp(from.Intensity, to.Intensity, t),
+            Diffusion = MathUtil.Lerp(from.Diffusion, to.Diffusion, t),
             Color = ColorRgb.Lerp(from.Color, to.Color, t)
         };
 }

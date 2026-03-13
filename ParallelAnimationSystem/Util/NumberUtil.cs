@@ -53,28 +53,6 @@ public static class NumberUtil
         => (x >> 40) * (1f / 16777216f); // 2^24
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint FloatToOrderedUInt(float value)
-    {
-        unchecked
-        {
-            var bits = BitConverter.SingleToUInt32Bits(value);
-            var mask = (uint)((int)bits >> 31); // 0x00000000 or 0xFFFFFFFF
-            return bits ^ (mask | 0x80000000);
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ushort HalfToOrderedUShort(Half value)
-    {
-        unchecked
-        {
-            var bits = BitConverter.HalfToUInt16Bits(value);
-            var mask = (ushort)((short)bits >> 15); // 0x0000 or 0xFFFF
-            return (ushort)(bits ^ (mask | 0x8000));
-        }
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeHash(string str)
     {
         // FNV-1a hash

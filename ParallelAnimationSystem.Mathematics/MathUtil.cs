@@ -7,24 +7,27 @@ public static class MathUtil
 {
     public static int DivideCeil(int dividend, int divisor)
         => (dividend + divisor - 1) / divisor;
+    
+    public static float Lerp(float a, float b, float t)
+        => a + (b - a) * t;
 
     public static Vector2 Lerp(Vector2 a, Vector2 b, float t)
         => new(
-            float.Lerp(a.X, b.X, t),
-            float.Lerp(a.Y, b.Y, t));
+            Lerp(a.X, b.X, t),
+            Lerp(a.Y, b.Y, t));
 
     public static Vector3 Lerp(Vector3 a, Vector3 b, float t)
         => new(
-            float.Lerp(a.X, b.X, t),
-            float.Lerp(a.Y, b.Y, t),
-            float.Lerp(a.Z, b.Z, t));
+            Lerp(a.X, b.X, t),
+            Lerp(a.Y, b.Y, t),
+            Lerp(a.Z, b.Z, t));
     
     public static Vector4 Lerp(Vector4 a, Vector4 b, float t)
         => new(
-            float.Lerp(a.X, b.X, t),
-            float.Lerp(a.Y, b.Y, t),
-            float.Lerp(a.Z, b.Z, t),
-            float.Lerp(a.W, b.W, t));
+            Lerp(a.X, b.X, t),
+            Lerp(a.Y, b.Y, t),
+            Lerp(a.Z, b.Z, t),
+            Lerp(a.W, b.W, t));
     
     public static float InverseLerp(float a, float b, float value)
         => (value - a) / (b - a);

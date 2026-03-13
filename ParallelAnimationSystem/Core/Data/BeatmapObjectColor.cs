@@ -1,3 +1,5 @@
+using ParallelAnimationSystem.Mathematics;
+
 namespace ParallelAnimationSystem.Core.Data;
 
 public struct BeatmapObjectColor(ColorRgb color1, ColorRgb color2, float opacity)
@@ -10,7 +12,7 @@ public struct BeatmapObjectColor(ColorRgb color1, ColorRgb color2, float opacity
         => new(
             ColorRgb.Lerp(a.Color1, b.Color1, t),
             ColorRgb.Lerp(a.Color2, b.Color2, t),
-            float.Lerp(a.Opacity, b.Opacity, t));
+            MathUtil.Lerp(a.Opacity, b.Opacity, t));
 
     public static BeatmapObjectColor Resolve(BeatmapObjectIndexedColor color, ThemeColorState context)
         => new(

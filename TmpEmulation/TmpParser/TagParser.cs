@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace TmpParser;
 
-public static partial class TagParser
+public static class TagParser
 {
     private static readonly Dictionary<string, Color3> KnownColors = new()
     {
@@ -17,14 +17,12 @@ public static partial class TagParser
         ["white"] = Color3.ParseHex("FFFFFF"),
         ["yellow"] = Color3.ParseHex("FFFF00"),
     };
-    
-    [GeneratedRegex(@"<([^<>]+?)>")]
-    private static partial Regex GetTagRegex();
+
+    private static readonly Regex Regex = new("<([^<>]+?)>", RegexOptions.Compiled);
 
     public static IEnumerable<IToken> EnumerateTokens(string text)
     {
-        var regex = GetTagRegex();
-        var matches = regex.Matches(text);
+        var matches = Regex.Matches(text);
         var lastIndex = 0;
         foreach (Match match in matches)
         {

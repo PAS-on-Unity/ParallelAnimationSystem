@@ -1,5 +1,6 @@
 using System.Numerics;
 using Pamx.Common.Enum;
+using ParallelAnimationSystem.Mathematics;
 
 namespace ParallelAnimationSystem.Core.Data;
 
@@ -16,8 +17,8 @@ public struct GradientEffectState()
         {
             Color1 = ColorRgb.Lerp(a.Color1, b.Color1, t),
             Color2 = ColorRgb.Lerp(a.Color2, b.Color2, t),
-            Intensity = float.Lerp(a.Intensity, b.Intensity, t),
-            Rotation = float.Lerp(a.Rotation, b.Rotation, t),
+            Intensity = MathUtil.Lerp(a.Intensity, b.Intensity, t),
+            Rotation = MathUtil.Lerp(a.Rotation, b.Rotation, t),
             Mode = b.Mode // zero order hold, can't lerp enums
         };
 }

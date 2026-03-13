@@ -22,16 +22,16 @@ public static class EventHelper
     public static LensDistortionData LerpLensDistortionData(LensDistortionData a, LensDistortionData b, float t)
         => new()
         {
-            Intensity = float.Lerp(a.Intensity, b.Intensity, t),
+            Intensity = MathUtil.Lerp(a.Intensity, b.Intensity, t),
             Center = Vector2.Lerp(a.Center, b.Center, t)
         };
 
     public static GrainData LerpGrainData(GrainData a, GrainData b, float t)
         => new()
         {
-            Intensity = float.Lerp(a.Intensity, b.Intensity, t),
-            Size = float.Lerp(a.Size, b.Size, t),
-            Mix = float.Lerp(a.Mix, b.Mix, t),
+            Intensity = MathUtil.Lerp(a.Intensity, b.Intensity, t),
+            Size = MathUtil.Lerp(a.Size, b.Size, t),
+            Mix = MathUtil.Lerp(a.Mix, b.Mix, t),
             Colored = a.Colored // zero order hold, can't lerp booleans
         };
 
@@ -79,8 +79,8 @@ public static class EventHelper
     public static GlitchData LerpGlitchData(GlitchData a, GlitchData b, float t)
         => new()
         {
-            Intensity = float.Lerp(a.Intensity, b.Intensity, t),
-            Speed = float.Lerp(a.Speed, b.Speed, t),
-            Width = float.Lerp(a.Width, b.Width, t)
+            Intensity = MathUtil.Lerp(a.Intensity, b.Intensity, t),
+            Speed = MathUtil.Lerp(a.Speed, b.Speed, t),
+            Width = MathUtil.Lerp(a.Width, b.Width, t)
         };
 }

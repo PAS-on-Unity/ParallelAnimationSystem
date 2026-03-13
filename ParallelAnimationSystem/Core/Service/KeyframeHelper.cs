@@ -81,7 +81,7 @@ public static class KeyframeHelper
     }
 
     private static float RandomRange(float min, float max, PseudoRng randomNext)
-        => float.Lerp(min, max, RandomFloat(randomNext));
+        => MathUtil.Lerp(min, max, RandomFloat(randomNext));
 
     private static float RandomFloat(PseudoRng randomNext)
         => NumberUtil.UlongToFloat01(randomNext());

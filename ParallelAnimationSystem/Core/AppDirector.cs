@@ -91,7 +91,7 @@ public class AppDirector(
                     Color1 = eventState.Gradient.Color1,
                     Color2 = eventState.Gradient.Color2,
                     Intensity = eventState.Gradient.Intensity,
-                    Rotation = eventState.Gradient.Rotation * MathF.Tau,
+                    Rotation = eventState.Gradient.Rotation * MathF.PI * 2f,
                     Mode = eventState.Gradient.Mode
                 },
                 HueShift = new HueShiftEffectState

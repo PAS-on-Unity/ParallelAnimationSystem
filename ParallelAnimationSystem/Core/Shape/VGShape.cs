@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using ParallelAnimationSystem.Mathematics;
 
 namespace ParallelAnimationSystem.Core.Shape;
 
@@ -294,8 +295,8 @@ public static class VGShape
             cornerRoundness = 0;
         else
         {
-            var pos = float.Lerp(0.5f, 0.25f, (cornerCount - 3f) / 9f);
-            cornerRoundness = float.Lerp(0, pos, Math.Clamp(cornerRoundness, 0f, 1f));
+            var pos = MathUtil.Lerp(0.5f, 0.25f, (cornerCount - 3f) / 9f);
+            cornerRoundness = MathUtil.Lerp(0, pos, Math.Clamp(cornerRoundness, 0f, 1f));
         }
 
         thickness = Math.Clamp(thickness, 0f, 1f);

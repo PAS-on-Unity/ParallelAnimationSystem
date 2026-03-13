@@ -5,6 +5,7 @@ using Pamx.Common.Enum;
 using ParallelAnimationSystem.Core.Data;
 using ParallelAnimationSystem.Core.Shape;
 using ParallelAnimationSystem.Core.Text;
+using ParallelAnimationSystem.Mathematics;
 using ParallelAnimationSystem.Rendering.Data;
 
 namespace ParallelAnimationSystem.Core.Service;
@@ -95,7 +96,7 @@ public class PlaybackObject(Identifier id) : IIdentifiable, INotifyPropertyChang
 
     public Sequence<Vector2> PositionSequence { get; } = new(Vector2.Lerp, () => Vector2.Zero);
     public Sequence<Vector2> ScaleSequence { get; } = new(Vector2.Lerp , () => Vector2.One);
-    public Sequence<float> RotationSequence { get; } = new(float.Lerp, () => 0f);
+    public Sequence<float> RotationSequence { get; } = new(MathUtil.Lerp, () => 0f);
 
     public IndirectSequence<BeatmapObjectIndexedColor, BeatmapObjectColor, ThemeColorState> ColorSequence { get; }
         = new(BeatmapObjectColor.Resolve, BeatmapObjectColor.Lerp, 

@@ -4,10 +4,13 @@ namespace Pamx.Common.Implementation;
 
 public static class RandomUtil
 {
-    private static Random Random => Random.Shared;
+    [ThreadStatic]
+    private static Random? Random;
     
     public static string GenerateId()
     {
+        Random ??= new Random();
+        
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*_+{}|:<>?,./;'[]▓▒░▐▆▉☰☱☲☳☴☵☶☷►▼◄▬▩▨▧▦▥▤▣▢□■¤ÿòèµ¶™ßÃ®¾ð¥œ⁕(◠‿◠✿)";
         const int length = 16;
         

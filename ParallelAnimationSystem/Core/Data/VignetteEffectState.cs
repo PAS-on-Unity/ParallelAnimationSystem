@@ -1,4 +1,5 @@
 using System.Numerics;
+using ParallelAnimationSystem.Mathematics;
 
 namespace ParallelAnimationSystem.Core.Data;
 
@@ -14,11 +15,11 @@ public struct VignetteEffectState()
     public static VignetteEffectState Lerp(VignetteEffectState a, VignetteEffectState b, float t)
         => new()
         {
-            Intensity = float.Lerp(a.Intensity, b.Intensity, t),
-            Smoothness = float.Lerp(a.Smoothness, b.Smoothness, t),
+            Intensity = MathUtil.Lerp(a.Intensity, b.Intensity, t),
+            Smoothness = MathUtil.Lerp(a.Smoothness, b.Smoothness, t),
             Color = ColorRgb.Lerp(a.Color, b.Color, t),
             Rounded = a.Rounded, // zero order hold, can't lerp booleans
-            Roundness = float.Lerp(a.Roundness, b.Roundness, t),
+            Roundness = MathUtil.Lerp(a.Roundness, b.Roundness, t),
             Center = Vector2.Lerp(a.Center, b.Center, t)
         };
 }

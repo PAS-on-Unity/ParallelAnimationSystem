@@ -2,16 +2,17 @@
 using Pamx.Common.Data;
 using ParallelAnimationSystem.Core.Data;
 using ParallelAnimationSystem.Core.Model;
+using ParallelAnimationSystem.Mathematics;
 
 namespace ParallelAnimationSystem.Core.Service;
 
 public class EventManager
 {
     private readonly Sequence<Vector2> cameraPositionSequence = new(Vector2.Lerp, () => Vector2.Zero);
-    private readonly Sequence<float> cameraRotationSequence = new(float.Lerp, () => 0f);
-    private readonly Sequence<float> cameraScaleSequence = new(float.Lerp, () => 20f);
-    private readonly Sequence<float> cameraShakeSequence = new(float.Lerp, () => 0f);
-    private readonly Sequence<float> chromaSequence = new(float.Lerp, () => 0f);
+    private readonly Sequence<float> cameraRotationSequence = new(MathUtil.Lerp, () => 0f);
+    private readonly Sequence<float> cameraScaleSequence = new(MathUtil.Lerp, () => 20f);
+    private readonly Sequence<float> cameraShakeSequence = new(MathUtil.Lerp, () => 0f);
+    private readonly Sequence<float> chromaSequence = new(MathUtil.Lerp, () => 0f);
     private readonly IndirectSequence<BloomData, BloomEffectState, ThemeColorState> bloomSequence = new(
         EventHelper.ResolveBloomData,
         BloomEffectState.Lerp,
@@ -27,7 +28,7 @@ public class EventManager
         GradientEffectState.Lerp,
         _ => default);
     private readonly Sequence<GlitchData> glitchSequence = new(EventHelper.LerpGlitchData, () => default);
-    private readonly Sequence<float> hueSequence = new(float.Lerp, () => 0f);
+    private readonly Sequence<float> hueSequence = new(MathUtil.Lerp, () => 0f);
 
     private readonly EventState state = new();
     

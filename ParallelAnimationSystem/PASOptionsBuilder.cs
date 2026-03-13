@@ -42,7 +42,7 @@ public class PASOptionsBuilder(IServiceCollection services)
         return this;
     }
     
-    public PASOptionsBuilder UseWindow<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>()
+    public PASOptionsBuilder UseWindow</* [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] */ T>()
         where T : IWindow
         => UseWindow(typeof(T));
     
@@ -52,7 +52,7 @@ public class PASOptionsBuilder(IServiceCollection services)
         return this;
     }
     
-    public PASOptionsBuilder UseRenderer<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>()
+    public PASOptionsBuilder UseRenderer</* [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] */ T>()
         where T : IRenderer
         => UseRenderer(typeof(T));
     
@@ -62,7 +62,7 @@ public class PASOptionsBuilder(IServiceCollection services)
         return this;
     }
     
-    public PASOptionsBuilder UseRenderingFactory<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>()
+    public PASOptionsBuilder UseRenderingFactory</* [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] */ T>()
         where T : IRenderingFactory
         => UseRenderingFactory(typeof(T));
     
@@ -72,7 +72,7 @@ public class PASOptionsBuilder(IServiceCollection services)
         return this;
     }
     
-    public PASOptionsBuilder UseRenderQueue<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>()
+    public PASOptionsBuilder UseRenderQueue</* [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] */ T>()
         where T : IRenderQueue
         => UseRenderQueue(typeof(T));
 

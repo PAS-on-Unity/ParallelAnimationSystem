@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using JetBrains.Annotations;
 using Pamx.Common.Data;
 using Pamx.Common.Enum;
 

@@ -80,14 +80,14 @@ public class IndexedTree<T> : IIndexedCollection<T> where T : IIdentifiable
         return true;
     }
     
-    public bool TryGetChildrenIndices(int parentIndex, [MaybeNullWhen(false)] out IReadOnlySet<int> childrenIndices)
-    {
-        childrenIndices = null;
-        if (parentIndex < 0 || parentIndex >= items.Count)
-            return false;
-        childrenIndices = childrenByIndex[parentIndex];
-        return true;
-    }
+    // public bool TryGetChildrenIndices(int parentIndex, [MaybeNullWhen(false)] out IReadOnlySet<int> childrenIndices)
+    // {
+    //     childrenIndices = null;
+    //     if (parentIndex < 0 || parentIndex >= items.Count)
+    //         return false;
+    //     childrenIndices = childrenByIndex[parentIndex];
+    //     return true;
+    // }
 
     public bool TryGetItem(int index, [MaybeNullWhen(false)] out T item)
     {

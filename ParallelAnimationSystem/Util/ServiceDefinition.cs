@@ -13,7 +13,7 @@ public class ServiceDefinition<T>
     /// Gets or sets the implementation type for the service.
     /// This property is used when registering the service using a type.
     /// </summary>
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+    /* [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] */
     public required Type? ImplementationType { get; set; }
 
     /// <summary>
@@ -62,7 +62,7 @@ public class ServiceDefinition<T>
     /// </summary>
     /// <param name="type">The type to convert.</param>
     /// <returns>A <see cref="ServiceDefinition{T}"/> with the specified type.</returns>
-    public static implicit operator ServiceDefinition<T>([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type type)
+    public static implicit operator ServiceDefinition<T>(/* [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] */ Type type)
         => new()
         {
             ImplementationType = type,
