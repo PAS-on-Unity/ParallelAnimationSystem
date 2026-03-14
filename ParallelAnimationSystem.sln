@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimpleStructuredBinaryForma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleStructuredBinaryFormat", "SimpleStructuredBinaryFormat\SimpleStructuredBinaryFormat\SimpleStructuredBinaryFormat.csproj", "{5425C8B8-0A09-4025-8FCE-1A8CEAB9D228}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelAnimationSystem.Unity", "ParallelAnimationSystem.Unity\ParallelAnimationSystem.Unity.csproj", "{BE245E4A-D4CE-4908-ACFF-E533420DEFED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{5425C8B8-0A09-4025-8FCE-1A8CEAB9D228}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5425C8B8-0A09-4025-8FCE-1A8CEAB9D228}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5425C8B8-0A09-4025-8FCE-1A8CEAB9D228}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE245E4A-D4CE-4908-ACFF-E533420DEFED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE245E4A-D4CE-4908-ACFF-E533420DEFED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE245E4A-D4CE-4908-ACFF-E533420DEFED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE245E4A-D4CE-4908-ACFF-E533420DEFED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
