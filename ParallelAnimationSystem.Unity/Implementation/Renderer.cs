@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using ParallelAnimationSystem.Core.Data;
@@ -7,38 +8,47 @@ using ParallelAnimationSystem.Data;
 using ParallelAnimationSystem.Rendering;
 using ParallelAnimationSystem.Rendering.Data;
 using UnityEngine;
+using Quaternion = UnityEngine.Quaternion;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
+using Vector4 = UnityEngine.Vector4;
 
 namespace ParallelAnimationSystem.Unity.Implementation;
 
 public class Renderer : IRenderer, IDisposable
 {
     private static readonly int AllVerticesId = Shader.PropertyToID("_AllVertices");
-    private static readonly int AllIndicesId = Shader.PropertyToID("_AllIndices");
-    private static readonly int MeshInfosId = Shader.PropertyToID("_MeshInfos");
-    private static readonly int MeshDrawItemsId = Shader.PropertyToID("_MeshDrawItems");
+    private static readonly int DrawItemsId = Shader.PropertyToID("_DrawItems");
     
-    [StructLayout(LayoutKind.Sequential)]
     private struct MeshInfo
     {
-        public int vertexOffset;
         public int indexOffset;
         public int indexCount;
     }
+    
+    [StructLayout(LayoutKind.Sequential)]
+    public struct GPUGlyphItem
+    {
+        Vector2 min;
+        Vector2 max;
+        Vector2 minUV;
+        Vector2 maxUV;
+        Vector4 color;
+        float rotation;
+        int boldItalic;
+        int atlasIndex;
+    };
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct GPUMeshDrawItem
+    private struct GPUDrawItem
     {
-        public float m11, m12, m21, m22, m31, m32;
-        public float pad0, pad1;
+        public Matrix3x2 transform;
         public Vector4 color1;
         public Vector4 color2;
         public int renderMode;
-        public int meshID;
         public float gradientRotation;
         public float gradientScale;
     }
-    
-    private static readonly int Color1 = Shader.PropertyToID("_Color");
     
     private CameraState cameraState;
     private PostProcessingState postProcessingState;
@@ -52,14 +62,13 @@ public class Renderer : IRenderer, IDisposable
     
     private MeshInfo[] meshInfos = new MeshInfo[1000];
     
-    private GraphicsBuffer allVerticesBuffer = new(GraphicsBuffer.Target.Structured, 1000, UnsafeUtil.SizeOf<Vector2>());
+    private GraphicsBuffer allVerticesBuffer = new(GraphicsBuffer.Target.Structured, 1000, Unsafe.SizeOf<Vector2>());
     private GraphicsBuffer allIndicesBuffer = new(GraphicsBuffer.Target.Structured, 1000, sizeof(int));
-    private GraphicsBuffer meshInfosBuffer = new(GraphicsBuffer.Target.Structured, 1000, UnsafeUtil.SizeOf<MeshInfo>());
-    private GraphicsBuffer meshDrawItemsBuffer = new(GraphicsBuffer.Target.Structured, 1000, UnsafeUtil.SizeOf<GPUMeshDrawItem>());
-    private GraphicsBuffer indirectDrawBuffer = new(GraphicsBuffer.Target.IndirectArguments, 1000, Unsafe.SizeOf<GraphicsBuffer.IndirectDrawArgs>());
+    private GraphicsBuffer meshDrawItemsBuffer = new(GraphicsBuffer.Target.Structured, 1000, Unsafe.SizeOf<GPUDrawItem>());
+    private GraphicsBuffer indirectDrawBuffer = new(GraphicsBuffer.Target.IndirectArguments, 1000, Unsafe.SizeOf<GraphicsBuffer.IndirectDrawIndexedArgs>());
     
-    private readonly List<GPUMeshDrawItem> gpuMeshDrawItems = [];
-    private readonly List<GraphicsBuffer.IndirectDrawArgs> gpuIndirectDrawArgsItems = [];
+    private readonly List<GPUDrawItem> gpuMeshDrawItems = [];
+    private readonly List<GraphicsBuffer.IndirectDrawIndexedArgs> gpuIndirectDrawIndexedArgsItems = [];
     
     private readonly PASUnityAssets assets;
     private readonly RenderingFactory renderingFactory;
@@ -82,7 +91,6 @@ public class Renderer : IRenderer, IDisposable
         
         allVerticesBuffer.Dispose();
         allIndicesBuffer.Dispose();
-        meshInfosBuffer.Dispose();
         meshDrawItemsBuffer.Dispose();
         indirectDrawBuffer.Dispose();
     }
@@ -132,7 +140,7 @@ public class Renderer : IRenderer, IDisposable
     public void Render()
     {
         gpuMeshDrawItems.Clear();
-        gpuIndirectDrawArgsItems.Clear();
+        gpuIndirectDrawIndexedArgsItems.Clear();
 
         for (var i = 0; i < drawCommandsCount; i++)
         {
@@ -141,27 +149,24 @@ public class Renderer : IRenderer, IDisposable
                 continue; // TODO: support other draw types
             
             ref var meshDrawItem = ref meshDrawItems[cmd.DrawId];
-            gpuMeshDrawItems.Add(new GPUMeshDrawItem
+            ref var meshInfo = ref meshInfos[meshDrawItem.MeshHandle.Id];
+            
+            gpuMeshDrawItems.Add(new GPUDrawItem
             {
-                m11 = meshDrawItem.Transform.M11,
-                m12 = meshDrawItem.Transform.M12,
-                m21 = meshDrawItem.Transform.M21,
-                m22 = meshDrawItem.Transform.M22,
-                m31 = meshDrawItem.Transform.M31,
-                m32 = meshDrawItem.Transform.M32,
+                transform = meshDrawItem.Transform,
                 color1 = new Vector4(meshDrawItem.Color1.R, meshDrawItem.Color1.G, meshDrawItem.Color1.B, meshDrawItem.Color1.A),
                 color2 = new Vector4(meshDrawItem.Color2.R, meshDrawItem.Color2.G, meshDrawItem.Color2.B, meshDrawItem.Color2.A),
                 renderMode = (int)meshDrawItem.RenderMode,
-                meshID = meshDrawItem.MeshHandle.Id,
                 gradientRotation = meshDrawItem.GradientRotation,
                 gradientScale = meshDrawItem.GradientScale
             });
             
-            gpuIndirectDrawArgsItems.Add(new GraphicsBuffer.IndirectDrawArgs
+            gpuIndirectDrawIndexedArgsItems.Add(new GraphicsBuffer.IndirectDrawIndexedArgs
             {
-                vertexCountPerInstance = unchecked((uint)meshInfos[meshDrawItem.MeshHandle.Id].indexCount),
+                indexCountPerInstance = unchecked((uint)meshInfo.indexCount),
                 instanceCount = 1,
-                startVertex = 0,
+                startIndex = unchecked((uint)meshInfo.indexOffset),
+                baseVertexIndex = 0,
                 startInstance = 0
             });
         }
@@ -170,29 +175,27 @@ public class Renderer : IRenderer, IDisposable
         if (gpuMeshDrawItems.Count > meshDrawItemsBuffer.count)
         {
             meshDrawItemsBuffer.Dispose();
-            meshDrawItemsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, gpuMeshDrawItems.Count, UnsafeUtil.SizeOf<GPUMeshDrawItem>());
+            meshDrawItemsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, gpuMeshDrawItems.Count, Unsafe.SizeOf<GPUDrawItem>());
         }
         meshDrawItemsBuffer.SetData(gpuMeshDrawItems);
         
-        if (gpuIndirectDrawArgsItems.Count > indirectDrawBuffer.count)
+        if (gpuIndirectDrawIndexedArgsItems.Count > indirectDrawBuffer.count)
         {
             indirectDrawBuffer.Dispose();
-            indirectDrawBuffer = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments, gpuIndirectDrawArgsItems.Count, Unsafe.SizeOf<GraphicsBuffer.IndirectDrawArgs>());
+            indirectDrawBuffer = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments, gpuIndirectDrawIndexedArgsItems.Count, Unsafe.SizeOf<GraphicsBuffer.IndirectDrawIndexedArgs>());
         }
-        indirectDrawBuffer.SetData(gpuIndirectDrawArgsItems);
+        indirectDrawBuffer.SetData(gpuIndirectDrawIndexedArgsItems);
         
         var material = assets.material;
         material.SetBuffer(AllVerticesId, allVerticesBuffer);
-        material.SetBuffer(AllIndicesId, allIndicesBuffer);
-        material.SetBuffer(MeshInfosId, meshInfosBuffer);
-        material.SetBuffer(MeshDrawItemsId, meshDrawItemsBuffer);
+        material.SetBuffer(DrawItemsId, meshDrawItemsBuffer);
         
         var rp = new RenderParams(material)
         {
             worldBounds = new Bounds(Vector3.zero, Vector3.one * 10000f)
         };
 
-        Graphics.RenderPrimitivesIndirect(rp, MeshTopology.Triangles, indirectDrawBuffer, gpuIndirectDrawArgsItems.Count);
+        Graphics.RenderPrimitivesIndexedIndirect(rp, MeshTopology.Triangles, allIndicesBuffer, indirectDrawBuffer, gpuIndirectDrawIndexedArgsItems.Count);
     }
 
     private void UpdateResources()
@@ -222,12 +225,15 @@ public class Renderer : IRenderer, IDisposable
             var vertexOffset = allVertices.Count;
             var indexOffset = allIndices.Count;
             
+            var indicesCopy = new int[meshData.Indices.Length];
+            for (var i = 0; i < meshData.Indices.Length; i++) // add vertex offset to indices
+                indicesCopy[i] = meshData.Indices[i] + vertexOffset;
+            
             allVertices.AddRange(meshData.Vertices);
-            allIndices.AddRange(meshData.Indices);
+            allIndices.AddRange(indicesCopy);
             
             meshInfos[id] = new MeshInfo
             {
-                vertexOffset = vertexOffset,
                 indexOffset = indexOffset,
                 indexCount = meshData.Indices.Length
             };
@@ -237,7 +243,7 @@ public class Renderer : IRenderer, IDisposable
         if (allVertices.Count > allVerticesBuffer.count)
         {
             allVerticesBuffer.Dispose();
-            allVerticesBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured , allVertices.Count, UnsafeUtil.SizeOf<Vector2>());
+            allVerticesBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured , allVertices.Count, Unsafe.SizeOf<Vector2>());
         }
         allVerticesBuffer.SetData(allVertices);
         
@@ -247,12 +253,5 @@ public class Renderer : IRenderer, IDisposable
             allIndicesBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, allIndices.Count, sizeof(int));
         }
         allIndicesBuffer.SetData(allIndices);
-        
-        if (meshInfos.Length > meshInfosBuffer.count)
-        {
-            meshInfosBuffer.Dispose();
-            meshInfosBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, meshInfos.Length, UnsafeUtil.SizeOf<MeshInfo>());
-        }
-        meshInfosBuffer.SetData(meshInfos);
     }
 }
